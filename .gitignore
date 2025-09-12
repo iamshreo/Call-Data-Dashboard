@@ -18,3 +18,4 @@ Thumbs.db
 # Ignore local, sensitive CSVs (keep them private on your machine)
 new_call_data.csv
 raw_call_data.csv
+sample_call_logs.csv
