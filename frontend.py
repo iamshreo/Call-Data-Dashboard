@@ -1,12 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import re
 
 
 st.set_page_config(page_title="Call Data Dashboard", layout="wide")
 
 
-st.title("Call Data Dashboard")
+
 
 
 df = pd.read_csv("new_call_data.csv", dtype=str)
@@ -29,6 +30,8 @@ if st.sidebar.button("Add Data"):
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
 if st.session_state.page == "Home":
+        
+        st.title("Call Data Dashboard")
         
         st.subheader("Summary Metrics")
         st.write("Total number of companies:", df["Company Name"].nunique())
@@ -162,7 +165,7 @@ elif st.session_state.page == "Filter Data":
     with col1:
         col_category = "Category"
         category_options = ["All"] + sorted(df[col_category].dropna().unique().tolist())
-        selected_category = st.selectbox("Category", category_options, help="Filter companies by category (e.g., Retail, IT, Services).")
+        selected_category = st.selectbox("Category", category_options, help="Filter companies by category (e.g., Interior Designer , Real Estate).")
 
     with col2:
         available_dates = sorted(df["DATE"].dropna().dt.date.unique())
@@ -209,8 +212,9 @@ elif st.session_state.page == "View Excel File":
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 elif st.session_state.page == "Search":
-    st.title("Search Data")
+    st.title("Search Data",help="Search Companies for all data")
     search_term = st.text_input("Enter search term for Company Name:")
+    
     results = pd.DataFrame()
     if search_term:
         results = df[df["Company Name"].str.contains(search_term, case=False, na=False)]
@@ -220,11 +224,58 @@ elif st.session_state.page == "Search":
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 elif st.session_state.page == "Add Data":
-    
     st.title("Add Bulk Data")
 
-    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv", "xlsx"])
+    uploaded_file = st.file_uploader("Upload a CSV or Excel file", type=["csv", "xlsx"])
 
+    if uploaded_file is not None:
+        try:
+            if uploaded_file.name.endswith(".csv"):
+                new_df = pd.read_csv(uploaded_file, dtype=str)
+            else:
+                new_df = pd.read_excel(uploaded_file, dtype=str)
+
+            st.write("Preview of uploaded file:")
+            st.dataframe(new_df.head())
+
+            if "Company Name" in new_df.columns and "Phone" in new_df.columns:
+                new_df = new_df.drop_duplicates(subset=["Company Name", "Phone"], keep="first")
+
+            if "DATE" in new_df.columns:
+                new_df["DATE"] = pd.to_datetime(new_df["DATE"], errors="coerce", dayfirst=True)
+                new_df["DATE"] = new_df["DATE"].dt.strftime("%Y-%m-%d")
+
+            def normalize_phone(phone, country_code="+91"):
+                if pd.isna(phone) or str(phone).strip() == "":
+                    return "Not Available"
+                digits = re.sub(r"\D", "", str(phone))
+                if digits.startswith(country_code.replace("+", "")):
+                    return f"+{digits}"
+                return country_code + digits
+
+            if "Phone" in new_df.columns:
+                new_df["Phone"] = new_df["Phone"].apply(normalize_phone)
+                new_df.rename(columns={"Phone": "Phone No"}, inplace=True)
+
+            if "Interested" in new_df.columns:
+                new_df["Interested"] = new_df["Interested"].fillna("Not Replied")
+            if "Whatsapp" in new_df.columns:
+                new_df["Whatsapp"] = new_df["Whatsapp"].fillna("Not Replied")
+
+            if "Follow UP date" in new_df.columns:
+                new_df["Follow UP date"] = pd.to_datetime(new_df["Follow UP date"], errors="coerce", dayfirst=True)
+                new_df["Follow UP date"] = new_df["Follow UP date"].dt.strftime("%Y-%m-%d").fillna("Not Scheduled")
+
+            if "Follow UP" in new_df.columns:
+                new_df["Follow UP"] = new_df["Follow UP"].replace("", "Follow-up pending").fillna("Follow-up pending")
+
+            new_df.to_csv("new_call_data.csv", mode="a", header=False, index=False)
+
+            st.success("Bulk data cleaned and added successfully")
+            st.dataframe(new_df.head())
+
+        except Exception as e:
+            st.error(f"Error processing file: {e}")
 
 
 
