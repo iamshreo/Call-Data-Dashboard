@@ -3,12 +3,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import re
 
-
 st.set_page_config(page_title="Call Data Dashboard", layout="wide")
-
-
-
-
 
 df = pd.read_csv("new_call_data.csv", dtype=str)
 
@@ -32,6 +27,27 @@ if st.sidebar.button("Add Data"):
 if st.session_state.page == "Home":
         
         st.title("Call Data Dashboard")
+
+        total_companies = df["Company Name"].nunique()
+        total_categories = df["Category"].nunique()
+        followup_done = df["Follow UP"].str.contains("Completed", case=False, na=False).sum()
+        followup_pending = df["Follow UP"].str.contains("pending", case=False, na=False).sum()
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric(label=" Total Companies", value=total_companies)
+
+        with col2:
+            st.metric(label=" Categories", value=total_categories)
+
+        with col3:
+            st.metric(label=" Follow-up Done", value=followup_done)
+
+        with col4:
+            st.metric(label=" Follow-up Pending", value=followup_pending)
+
+        st.markdown("---")
         
         st.subheader("Summary Metrics")
         st.write("Total number of companies:", df["Company Name"].nunique())
