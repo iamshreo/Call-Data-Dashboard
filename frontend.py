@@ -26,7 +26,16 @@ if st.sidebar.button("Add Data"):
 
 if st.session_state.page == "Home":
         
-        st.title("Call Data Dashboard")
+        phone_svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
+            width="28" height="28" style="vertical-align: middle; margin-right: 10px;">
+        <path d="M21 16.42V19.9561C21 20.4811 20.5941 20.9167 20.0705 20.9537C19.6331 20.9846 19.2763 21 19 21C10.1634 21 3 13.8366 3 5C3 4.72371 3.01545 4.36687 3.04635 3.9295C3.08337 3.40588 3.51894 3 4.04386 3H7.5801C7.83678 3 8.05176 3.19442 8.07753 3.4498C8.10067 3.67907 8.12218 3.86314 8.14207 4.00202C8.34435 5.41472 8.75753 6.75936 9.3487 8.00303C9.44359 8.20265 9.38171 8.44159 9.20185 8.57006L7.04355 10.1118C8.35752 13.1811 10.8189 15.6425 13.8882 16.9565L15.4271 14.8019C15.5572 14.6199 15.799 14.5573 16.001 14.6532C17.2446 15.2439 18.5891 15.6566 20.0016 15.8584C20.1396 15.8782 20.3225 15.8995 20.5502 15.9225C20.8056 15.9483 21 16.1633 21 16.42Z"></path>
+        </svg>
+        """
+        st.markdown(
+            f"<h1 style='display: flex; align-items: center;'>{phone_svg} Call Data Dashboard</h1>",
+            unsafe_allow_html=True
+        )
 
         total_companies = df["Company Name"].nunique()
         total_categories = df["Category"].nunique()
@@ -84,6 +93,10 @@ if st.session_state.page == "Home":
         if whatsapp_filter == "All":
             st.write("Companies with WhatsApp (YES):", whatsapp_counts.get("YES", 0))
             st.write("Companies without WhatsApp (NO):", whatsapp_counts.get("NO", 0))
+        elif whatsapp_filter =="YES":
+            st.write("Companies with WhatsApp (YES):", whatsapp_counts.get("YES", 0))
+        elif whatsapp_filter =="NO":
+            st.write("Companies with WhatsApp (NO):", whatsapp_counts.get("NO", 0))
         
 
         # ------------------------------------------------------------------------------------------------------------------------
@@ -167,12 +180,16 @@ if st.session_state.page == "Home":
         st.dataframe(filtered_raw)
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
-    
 
 elif st.session_state.page == "Filter Data":
     
+    filter_svg ="""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"width="28" height="28" style="vertical-align: middle; margin-right: 10px;"><path d="M21 4V6H20L15 13.5V22H9V13.5L4 6H3V4H21ZM6.4037 6L11 12.8944V20H13V12.8944L17.5963 6H6.4037Z"></path></svg>"""   
 
-    st.title("Call Data Filter Dashboard")
+                             
+    st.markdown(
+            f"<h1 style='display: flex; align-items: center;'>{filter_svg} Data Filter Dashboard</h1>",
+            unsafe_allow_html=True
+        )
 
     df["DATE"] = pd.to_datetime(df["DATE"], errors="coerce")
 
@@ -220,15 +237,28 @@ elif st.session_state.page == "Filter Data":
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
+
 elif st.session_state.page == "View Excel File":
-    st.title("View Excel File")
+
+    excel_svg="""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"width="28" height="28" style="vertical-align: middle; margin-right: 10px;"><path d="M2.85858 2.87732L15.4293 1.0815C15.7027 1.04245 15.9559 1.2324 15.995 1.50577C15.9983 1.52919 16 1.55282 16 1.57648V22.4235C16 22.6996 15.7761 22.9235 15.5 22.9235C15.4763 22.9235 15.4527 22.9218 15.4293 22.9184L2.85858 21.1226C2.36593 21.0522 2 20.6303 2 20.1327V3.86727C2 3.36962 2.36593 2.9477 2.85858 2.87732ZM4 4.73457V19.2654L14 20.694V3.30599L4 4.73457ZM17 19H20V4.99997H17V2.99997H21C21.5523 2.99997 22 3.44769 22 3.99997V20C22 20.5523 21.5523 21 21 21H17V19ZM10.2 12L13 16H10.6L9 13.7143L7.39999 16H5L7.8 12L5 7.99997H7.39999L9 10.2857L10.6 7.99997H13L10.2 12Z"></path></svg>"""
+
+    st.markdown(
+            f"<h1 style='display: flex; align-items: center;'>{excel_svg} View Excel File</h1>",
+            unsafe_allow_html=True
+        )
+    
     st.write("Showing raw CSV data:")
     st.dataframe(df)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 elif st.session_state.page == "Search":
-    st.title("Search Data",help="Search Companies for all data")
+
+    search_svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"width="28" height="28" style="vertical-align: middle; margin-right: 10px;"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748Z"></path></svg>"""
+
+    st.markdown(f"<h1 style='display: flex; align-items: center;'>{search_svg} Search Data </h1> ",
+                unsafe_allow_html=True
+                )
     search_term = st.text_input("Enter search term for Company Name:")
     
     results = pd.DataFrame()
@@ -240,8 +270,12 @@ elif st.session_state.page == "Search":
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 elif st.session_state.page == "Add Data":
-    st.title("Add Bulk Data")
 
+    add_data_svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"width="28" height="28" style="vertical-align: middle; margin-right: 10px;"><path d="M14 14.252V16.3414C13.3744 16.1203 12.7013 16 12 16C8.68629 16 6 18.6863 6 22H4C4 17.5817 7.58172 14 12 14C12.6906 14 13.3608 14.0875 14 14.252ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11ZM18 17V14H20V17H23V19H20V22H18V19H15V17H18Z"></path></svg>"""
+    st.markdown(f"<h1 style='display: flex; align-items: center;'>{add_data_svg} Add Bulk Data </h1> ",
+                unsafe_allow_html=True
+                )
+    
     uploaded_file = st.file_uploader("Upload a CSV or Excel file", type=["csv", "xlsx"])
 
     if uploaded_file is not None:
