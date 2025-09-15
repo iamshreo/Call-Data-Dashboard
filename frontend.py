@@ -57,10 +57,36 @@ if st.session_state.page == "Home":
         with col4:
             st.metric(label=" Follow-up Pending", value=followup_pending)
 
+        # notification---------------------------
+
+        pending_followups = df[df["Follow UP"].str.contains("pending", case=False, na=False)]
+        if not pending_followups.empty:
+            st.toast(f"⚠️ You have {len(pending_followups)} pending follow-ups!", icon="⚠️")
+   
         st.markdown("---")
         
         st.subheader("Summary Metrics")
         st.write("Total number of companies:", df["Company Name"].nunique())
+
+        st.markdown("---")
+
+        valid_followups = df.dropna(subset=["Follow UP date"])
+        sorted_followups = valid_followups.sort_values("Follow UP date")
+        next_five = sorted_followups.head(5)
+
+        st.subheader("🔔 Upcoming Follow-ups")
+        if next_five.empty:
+            st.success("✅ No upcoming follow-ups.")
+        else:
+            st.table(
+                next_five[["Company Name", "Follow UP date", "Category", "Call Details"]]
+                .rename(columns={
+                    "Company Name": "Company",
+                    "Follow UP date": "Follow-up Date",
+                    "Category": "Category",
+                    "Call Details": "Call Status"
+                })
+            )
 
         st.markdown("---")
 
