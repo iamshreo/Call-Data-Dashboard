@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 import re
 
 st.set_page_config(page_title="Call Data Dashboard", layout="wide")
@@ -57,16 +58,42 @@ if st.session_state.page == "Home":
         with col4:
             st.metric(label=" Follow-up Pending", value=followup_pending)
 
+        st.markdown("---")
+
+        # interested graph ---------------------------------------------------------------
+
+        total_leads = len(df)
+        interested_leads = df[df['Interested'].str.upper() == "YES"].shape[0]
+        interested_percent = round((interested_leads / total_leads) * 100, 2) if total_leads > 0 else 0
+
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number+delta",
+            value=interested_percent,
+            delta={'reference': 50},  
+            title={'text': "Interested Leads %"},
+            gauge={
+                'axis': {'range': [0, 100]},
+                'bar': {'color': "#ed1b2e"},  
+                'steps': [
+                    {'range': [0, 50], 'color': "lightgray"},
+                    {'range': [50, 100], 'color': "lightgreen"}
+                ],
+                'threshold': {
+                    'line': {'color': "red", 'width': 4},
+                    'thickness': 0.75,
+                    'value': interested_percent
+                }
+            }
+        ))
+
+        st.plotly_chart(fig, use_container_width=True)
+
+
         # notification---------------------------
 
         pending_followups = df[df["Follow UP"].str.contains("pending", case=False, na=False)]
         if not pending_followups.empty:
             st.toast(f"⚠️ You have {len(pending_followups)} pending follow-ups!", icon="⚠️")
-   
-        st.markdown("---")
-        
-        st.subheader("Summary Metrics")
-        st.write("Total number of companies:", df["Company Name"].nunique())
 
         st.markdown("---")
 
@@ -87,6 +114,11 @@ if st.session_state.page == "Home":
                     "Call Details": "Call Status"
                 })
             )
+
+        st.markdown("---")
+        
+        st.subheader("Summary Metrics")
+        st.write("Total number of companies:", df["Company Name"].nunique())
 
         st.markdown("---")
 
@@ -218,9 +250,6 @@ if st.session_state.page == "Home":
             )
 
             st.plotly_chart(fig, use_container_width=True)
-
-
-
 
  # -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -394,7 +423,3 @@ elif st.session_state.page == "Add Data":
 
         except Exception as e:
             st.error(f"Error processing file: {e}")
-
-
-
-
