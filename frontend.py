@@ -39,24 +39,82 @@ if st.session_state.page == "Home":
             unsafe_allow_html=True
         )
 
-        total_companies = df["Company Name"].nunique()
+# -------------------- METRICS WITH STYLED BOXES --------------------
+
+        total_companies = df["Company Name"].count()
         total_categories = df["Category"].nunique()
         followup_done = df["Follow UP"].str.contains("Completed", case=False, na=False).sum()
         followup_pending = df["Follow UP"].str.contains("pending", case=False, na=False).sum()
 
+
+        st.markdown("""
+            <style>
+            .metric-card {
+                background-color: white;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                text-align: center;
+            }
+            .metric-value {
+                font-size: 28px;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+            .metric-label {
+                font-size: 16px;
+                font-weight: 500;
+                color: #555;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            st.metric(label=" Total Companies", value=total_companies)
+            st.markdown(
+                f"""
+                <div class="metric-card" style="background-color:#3498db; color:white;">
+                    <div class="metric-label">Total Companies</div>
+                    <div class="metric-value">{total_companies}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         with col2:
-            st.metric(label=" Categories", value=total_categories)
+            st.markdown(
+                f"""
+                <div class="metric-card" style="background-color:#2ecc71; color:white;">
+                    <div class="metric-label">Categories</div>
+                    <div class="metric-value">{total_categories}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         with col3:
-            st.metric(label=" Follow-up Done", value=followup_done)
+            st.markdown(
+                f"""
+                <div class="metric-card" style="background-color:#f1c40f; color:white;">
+                    <div class="metric-label">Follow-up Done</div>
+                    <div class="metric-value">{followup_done}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         with col4:
-            st.metric(label=" Follow-up Pending", value=followup_pending)
+            st.markdown(
+                f"""
+                <div class="metric-card" style="background-color:#e74c3c; color:white;">
+                    <div class="metric-label">Follow-up Pending</div>
+                    <div class="metric-value">{followup_pending}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
 
         st.markdown("---")
 
